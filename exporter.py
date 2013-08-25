@@ -1,3 +1,5 @@
+#!/usr/bin/env python2
+
 from datetime import datetime
 import sqlite3
 import os.path
@@ -57,8 +59,9 @@ def write_post(f,title,link,description, date_published):
         description = ''
     else:
         description = description.encode('utf8')
-    if date_published == None:
-        date_published = ''
+
+    if not date_published:
+        date_published = 'No date'
     else:
         date_published = datetime.strptime(date_published[:10], '%Y-%m-%d')
         date_published = date_published.strftime('%Y-%m-%d')

@@ -62,8 +62,8 @@ class Post(object):
 
     def _post_exists(self):
         c = self.db_conn.cursor()
-        values = [self.feed, self.title]
-        c.execute('SELECT id FROM posts WHERE feed = ? AND title = ?', values)
+        values = [self.feed, self.title, self.date_published]
+        c.execute('SELECT id FROM posts WHERE feed = ? AND title = ? AND datepublished = ?', values)
         return True if len(c.fetchall()) is not 0 else False
 
 
@@ -106,6 +106,8 @@ class RSSImporter(object):
             result = text.text
         except AttributeError:
             result = text
+        if result == None:
+            result = ''
         return result
             
 
