@@ -8,6 +8,8 @@ import sqlite3
 from feedreader.parser import from_url
 from lxml import etree as ET
 
+from config import CONFIG_PATH, DB_PATH
+
 def parse_config(directory):
     feeds = {}
     # ugly
@@ -111,6 +113,5 @@ class RSSImporter(object):
         return result
             
 
-
-config = parse_config('/home/marek/Dropbox/projekte/RSSdownload/urls/')
-RSSImporter('/home/marek/Dropbox/projekte/RSSdownload/rssdownload.db', config)
+urls = parse_config(CONFIG_PATH)
+RSSImporter(DB_PATH, urls)

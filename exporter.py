@@ -4,13 +4,13 @@ from datetime import datetime
 import sqlite3
 import os.path
 
-EXPORT_PATH = '/home/marek/Dropbox/projekte/RSSdownload/'+datetime.now().strftime('%Y-%m-%d %H:%M/')
+from config import DB_PATH, EXPORT_PATH
+
+EXPORT_PATH = EXPORT_PATH+datetime.now().strftime('%Y-%m-%d %H:%M/')
 
 if not os.path.exists(EXPORT_PATH):
     os.makedirs(EXPORT_PATH)
  
-DB_PATH = '/home/marek/Dropbox/projekte/RSSdownload/rssdownload.db'
-
 HEADER = '''<html>\n
             <head>\n
             <meta http-equiv="content-type" content="application/xhtml+xml;charset=utf-8" />\n
