@@ -1,5 +1,6 @@
 #!/usr/bin/env python2
 
+from collections import defaultdict
 from datetime import datetime
 import sqlite3
 import os.path
@@ -11,22 +12,22 @@ EXPORT_PATH = EXPORT_PATH+datetime.now().strftime('%Y-%m-%d %H:%M/')
 if not os.path.exists(EXPORT_PATH):
     os.makedirs(EXPORT_PATH)
  
-HEADER = '''<html>\n
-            <head>\n
-            <meta http-equiv="content-type" content="application/xhtml+xml;charset=utf-8" />\n
-
-            </head>\n
-            <body>
-
+HEADER = '''<html>\
+<head>\n
+<meta http-equiv="content-type" content="application/xhtml+xml;charset=utf-8" />\n
+<link rel="stylesheet" href="../libs/bootstrap.min.css">\n
+</head>\n
+<body>\n
+<div class="col-lg-6">\n
 '''
 
-FOOTER = '''</body></html>'''
+FOOTER = '''</div></body></html>'''
 
 def get_not_exported_posts(db_path):
     conn = sqlite3.connect(db_path)
     c = conn.cursor()
     c.execute('''SELECT category, feed, datepublished, title, description, link FROM posts
-                 WHERE exported = 'False' ORDER BY category,feed ''')
+                 WHERE exported = 'False' ORDER BY category, feed ''')
     return c.fetchall()
     
 def set_exported_for_all(db_path):
@@ -41,12 +42,12 @@ def write_category(f, category):
         category = category.encode('utf8')
     f.write('<h1>'+category+'</h1>\n')
 
-def write_feed(f, feed):
+def write_feed(f, feed, feed_id):
     if feed != None:
         feed = feed.encode('utf8')
-    f.write('<h2>'+feed+'</h2>\n')
+    f.write('<h2 id="{}">{}</h2>\n'.format(feed_id, feed))
 
-def write_post(f,title,link,description, date_published):
+def write_post(f, title, link, description, date_published, post_id):
     if title == None:
         title = ''
     else:
@@ -67,35 +68,59 @@ def write_post(f,title,link,description, date_published):
         date_published = date_published.strftime('%Y-%m-%d')
 
 
-    f.write('<a href='+link+'><h4>'+date_published+': '+title+'</h4></a>\n')
-    f.write('<p>'+description+'</p>\n')
+    f.write('<a href={0}><h4 id={1}>{2}: {3}</h4></a>\n'.format(link, post_id, date_published, title))
+    f.write('<p>'+description+'</p>\n<hr>\n')
 
 def export_with_categories(posts):
     category = ''
     feed = ''
-    categories = []
+    categories = defaultdict(lambda: defaultdict(list))
+    feed_id = 0
+    post_no = 0
+    post_id = ''
     for post in posts:
         if post[0] != category:
+            # new category
+            feed_id = 0
+            post_no = 0
             category = post[0]
-            categories.append(category)
             f = open(EXPORT_PATH+category+'.html', 'w')
             f.write(HEADER)
         if post[1] != feed:
+            # new feed
             feed = post[1]
-            write_feed(f, feed)
-        write_post(f,post[3], post[5], post[4], post[2])
+            write_feed(f, feed, feed_id)
+            feed_id += 1
+        post_id = '{0}{1}'.format(feed_id, post_no)
+        write_post(f,post[3], post[5], post[4], post[2], post_id)
+        post_no += 1
+        categories[category][feed].append([post[3], post_id, post[5]])
+    f.write(FOOTER)
     f.close()
     return categories
 
 def create_index(categories):
     f = open(EXPORT_PATH+'index.html','w')
     f.write(HEADER)
-    for c in categories:
-        f.write('<a href=\"'+c+'.html\">'+c+'</a><br>\n')
+    f.write('<h1>Index</h1>')
+    f.write('<ul>\n')
+    for category, feeds in categories.items():
+        f.write('<ul>\n')
+        f.write('<li><a href="{0}.html">{0}</a></li>\n'.format(category))
+        for feed, posts in feeds.items():
+            f.write('<ul>\n')
+            f.write('<li><a href="{0}.html#{2}">{1}</a></li>\n'.format(category, feed, posts[0][1][0]))
+            f.write('<ul>\n')
+            for post in posts:
+                f.write('<li><a href="{0}.html#{1}">{2}</a> <a href="{3}">[link]</a></li>\n'.format(category, post[1], post[0].encode('utf8'), post[2]))
+            f.write('</ul>\n')
+            f.write('</ul>\n')
+        f.write('</ul>\n')
+    f.write('</ul>\n')
+    f.write(FOOTER)
     f.close()
     
 posts = get_not_exported_posts(DB_PATH)
 categories = export_with_categories(posts)
 create_index(categories)
-
 set_exported_for_all(DB_PATH)
