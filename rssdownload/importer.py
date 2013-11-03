@@ -111,7 +111,3 @@ class RSSImporter(object):
         if result == None:
             result = ''
         return result
-            
-
-urls = parse_config(CONFIG_PATH)
-RSSImporter(DB_PATH, urls)

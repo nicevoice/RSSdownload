@@ -1,0 +1,6 @@
+*.pyc
+*.swp
+rssdownload.db
+\#*\#
+urls
+*~

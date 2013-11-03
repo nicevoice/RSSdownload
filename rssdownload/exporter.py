@@ -3,15 +3,7 @@
 from collections import defaultdict
 from datetime import datetime
 import sqlite3
-import os.path
-
-from config import DB_PATH, EXPORT_PATH
-
-EXPORT_PATH = EXPORT_PATH+datetime.now().strftime('%Y-%m-%d %H:%M/')
-
-if not os.path.exists(EXPORT_PATH):
-    os.makedirs(EXPORT_PATH)
- 
+    
 HEADER = '''<html>\
 <head>\n
 <meta http-equiv="content-type" content="application/xhtml+xml;charset=utf-8" />\n
@@ -71,7 +63,7 @@ def write_post(f, title, link, description, date_published, post_id):
     f.write('<a href={0}><h4 id={1}>{2}: {3}</h4></a>\n'.format(link, post_id, date_published, title))
     f.write('<p>'+description+'</p>\n<hr>\n')
 
-def export_with_categories(posts):
+def export_with_categories(posts, export_path):
     category = ''
     feed = ''
     categories = defaultdict(lambda: defaultdict(list))
@@ -84,7 +76,7 @@ def export_with_categories(posts):
             feed_id = 0
             post_no = 0
             category = post[0]
-            f = open(EXPORT_PATH+category+'.html', 'w')
+            f = open(export_path+category+'.html', 'w')
             f.write(HEADER)
         if post[1] != feed:
             # new feed
@@ -99,8 +91,8 @@ def export_with_categories(posts):
     f.close()
     return categories
 
-def create_index(categories):
-    f = open(EXPORT_PATH+'index.html','w')
+def create_index(categories, export_path):
+    f = open(export_path+'index.html','w')
     f.write(HEADER)
     f.write('<h1>Index</h1>')
     f.write('<ul>\n')
@@ -119,8 +111,3 @@ def create_index(categories):
     f.write('</ul>\n')
     f.write(FOOTER)
     f.close()
-    
-posts = get_not_exported_posts(DB_PATH)
-categories = export_with_categories(posts)
-create_index(categories)
-set_exported_for_all(DB_PATH)
