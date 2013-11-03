@@ -69,7 +69,7 @@ class Post(object):
         return True if len(c.fetchall()) is not 0 else False
 
 
-class RSSImporter(object):
+class RSSUpdater(object):
     def __init__(self, db_path, feeds):
         self.feeds = feeds
         self.date_added = datetime.now()
