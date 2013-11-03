@@ -3,7 +3,7 @@ import optparse
 import os
 
 import config
-import rssdownload.exporter as updater
+import rssdownload.updater as updater
 import rssdownload.importer as importer
 
 p = optparse.OptionParser()
