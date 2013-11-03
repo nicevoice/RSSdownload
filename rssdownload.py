@@ -3,21 +3,21 @@ import optparse
 import os
 
 import config
-import rssdownload.exporter as exporter
+import rssdownload.exporter as updater
 import rssdownload.importer as importer
 
 p = optparse.OptionParser()
 
-p.add_option('-u', dest='importposts', action='store_true', help='Update feeds')
+p.add_option('-u', dest='updatefeeds', action='store_true', help='Update feeds')
 p.add_option('-e', dest='exporthtml', action='store_true', help='Export unread posts to HTML')
 p.add_option('-m', dest='markread', action='store_true', help='Mark exported as read')
 p.add_option('-s', dest='send', action='store_true', help='Send unread posts as emails')
 
 opt, args = p.parse_args()
 
-if opt.importposts:
-    urls = importer.parse_config(config.CONFIG_PATH)
-    importer.RSSImporter(config.DB_PATH, urls)
+if opt.updatefeeds:
+    urls = updater.parse_config(config.CONFIG_PATH)
+    updater.RSSUpdater(config.DB_PATH, urls)
 if opt.exporthtml:
     export_path = config.EXPORT_PATH+datetime.now().strftime('%Y-%m-%d %H:%M/')
     if not os.path.exists(export_path):
