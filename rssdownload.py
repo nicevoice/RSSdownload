@@ -4,7 +4,7 @@ import os
 
 import config
 import rssdownload.updater as updater
-import rssdownload.importer as importer
+import rssdownload.exporter as exporter
 
 p = optparse.OptionParser()
 
@@ -27,5 +27,5 @@ if opt.exporthtml:
     categories = exporter.export_with_categories(posts, export_path)
     exporter.create_index(categories, export_path)
 if opt.markread:
-    exporter.set_exported_for_all(conig.DB_PATH)
+    exporter.set_exported_for_all(config.DB_PATH)
 
