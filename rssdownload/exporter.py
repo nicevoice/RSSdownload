@@ -104,7 +104,11 @@ def create_index(categories, export_path):
             f.write('<li><a href="{0}.html#{2}">{1}</a></li>\n'.format(category, feed, posts[0][1][0]))
             f.write('<ul>\n')
             for post in posts:
-                f.write('<li><a href="{0}.html#{1}">{2}</a> <a href="{3}">[link]</a></li>\n'.format(category, post[1], post[0].encode('utf8'), post[2]))
+                f.write('<li><a href="{0}.html#{1}">{2}</a>'\
+                        '<a href="{3}">[link]</a></li>\n'.format(category,
+                                                                 post[1],
+                                                                 post[0].encode('utf8'), 
+                                                                 post[2].encode('utf8')))
             f.write('</ul>\n')
             f.write('</ul>\n')
         f.write('</ul>\n')
