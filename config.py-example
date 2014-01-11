@@ -1,0 +1,12 @@
+import os.path
+
+homepath = os.path.expanduser("~/")
+
+CONFIG_PATH = homepath+
+DB_PATH = homepath+
+EXPORT_PATH = homepath+
+SMTP_USER = 
+SMTP_PASSWD = 
+SMTP_ADDRESS = 
+SMTP_FROM = 
+SMTP_TO = 

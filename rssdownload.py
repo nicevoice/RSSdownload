@@ -7,6 +7,7 @@ import os
 import config
 import rssdownload.updater as updater
 import rssdownload.exporter as exporter
+import rssdownload.send as send
 
 p = optparse.OptionParser()
 
@@ -31,11 +32,14 @@ if opt.exporthtml or opt.send:
             exporter.write_html_pages(posts, 'category', export_path)
             exporter.write_html_index_by_category(posts, export_path)
         elif opt.send:
-            pass
-            # TODO hier weitermachen.
-            # exporter muss umgebaut werden. sodass er in einer eigener funktion speichern tut.
-    else:
-        print "Nothing to do. No posts"
+            send.send_posts(posts,
+                            config.SMTP_FROM,
+                            config.SMTP_TO,
+                            config.SMTP_ADDRESS,
+                            config.SMTP_USER,
+                            config.SMTP_PASSWD)
+        else:
+            print "Nothing to do. No posts"
 
     
 if opt.markread:
