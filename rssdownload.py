@@ -1,3 +1,5 @@
+#!/usr/bin/env python2
+
 from datetime import datetime
 import optparse
 import os
@@ -18,16 +20,24 @@ opt, args = p.parse_args()
 if opt.updatefeeds:
     urls = updater.parse_config(config.CONFIG_PATH)
     updater.RSSUpdater(config.DB_PATH, urls)
-if opt.exporthtml:
+
+if opt.exporthtml or opt.send:
     posts = exporter.get_not_exported_posts(config.DB_PATH)
     if posts:
-        export_path = config.EXPORT_PATH+datetime.now().strftime('%Y-%m-%d %H:%M/')
-        if not os.path.exists(export_path):
-            os.makedirs(export_path)
-        categories = exporter.export_with_categories(posts, export_path)
-        exporter.create_index(categories, export_path)
+        if opt.exporthtml:
+            export_path = config.EXPORT_PATH+datetime.now().strftime('%Y-%m-%d %H:%M/')
+            if not os.path.exists(export_path):
+                os.makedirs(export_path)
+            exporter.write_html_pages(posts, 'category', export_path)
+            exporter.write_html_index_by_category(posts, export_path)
+        elif opt.send:
+            pass
+            # TODO hier weitermachen.
+            # exporter muss umgebaut werden. sodass er in einer eigener funktion speichern tut.
     else:
         print "Nothing to do. No posts"
+
+    
 if opt.markread:
     exporter.set_exported_for_all(config.DB_PATH)
 
